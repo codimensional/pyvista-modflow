@@ -1,0 +1,138 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=77.0", "setuptools_scm>=8"]
+
+[project]
+name = "pyvista-modflow"
+dynamic = ["version"]
+description = "Read MODFLOW unstructured grids into PyVista as exact, flat-layered volumes."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "CoDimensional PBC", email = "hello@codimensional.com" }]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Scientific/Engineering :: Hydrology",
+  "Topic :: Scientific/Engineering :: Visualization",
+  "Typing :: Typed",
+]
+keywords = ["pyvista", "modflow", "modflow-usg", "groundwater", "disu", "vtk"]
+dependencies = ["numpy>=1.24", "pyvista>=0.49", "vtk>=9.4"]
+
+[project.entry-points."pyvista.readers"]
+".disu" = "pyvista_modflow:read"
+".dis" = "pyvista_modflow:read"
+
+[project.urls]
+Homepage = "https://github.com/codimensional/pyvista-modflow"
+Issues = "https://github.com/codimensional/pyvista-modflow/issues"
+Repository = "https://github.com/codimensional/pyvista-modflow"
+
+[dependency-groups]
+dev = ["mypy>=1.10", "pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.15"]
+
+[tool.setuptools.package-data]
+pyvista_modflow = ["py.typed"]
+
+[tool.setuptools_scm]
+version_scheme = "release-branch-semver"
+
+[tool.coverage.run]
+branch = true
+source = ["pyvista_modflow"]
+
+[tool.coverage.report]
+fail_under = 90
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:", "\\.\\.\\."]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers --strict-config"
+filterwarnings = ["error"]
+testpaths = ["tests"]
+xfail_strict = true
+
+[tool.ruff]
+line-length = 99
+src = ["src"]
+
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "single"
+
+[tool.ruff.lint]
+ignore = [
+  "COM812",
+  "CPY001",
+  "D107",
+  "D203",
+  "D212",
+  "FBT003",
+  "ISC001",
+  "TC001",
+  "TC002",
+  "TC003",
+]
+select = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+  "ANN",
+  "ARG",
+  "D",
+  "INP001",
+  "PLC0415",
+  "PLR2004",
+  "S101",
+  "B905",
+  "PLR0913",
+  "PLR0917",
+  "SLF001",
+]
+"scripts/**" = ["INP001", "T201"]
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"vtk".msg = "Use PyVista's API; the one raw VTK call goes through the pyvista object."
+"vtkmodules".msg = "Use PyVista's API; the one raw VTK call goes through the pyvista object."
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.numpydoc_validation]
+checks = ["all", "ES01", "EX01", "GL01", "GL02", "GL03", "SA01", "SA04"]
+exclude = [
+  '(^|\.)_arrays\.',
+  '\._[^.]+$',
+  '\.__init__$',
+  '\.__repr__$',
+  '^[^.]+$',
+]
+
+[tool.mypy]
+check_untyped_defs = true
+files = ["src/pyvista_modflow"]
+python_version = "3.10"
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = ["pyvista.*"]

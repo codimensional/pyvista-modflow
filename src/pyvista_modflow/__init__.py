@@ -141,7 +141,9 @@ def read(
         )
         warnings.warn(msg, UserWarning, stacklevel=2)
     ring, nside = fp.ring[np.repeat(keep, fp.nside)], fp.nside[keep]
-    grid, area = build_grid(fp.corner_xy, ring, nside, disu.top[keep], disu.bot[keep], layer[keep])
+    grid, area = build_grid(
+        fp.corner_xy, ring, nside, top=disu.top[keep], bot=disu.bot[keep], layer=layer[keep]
+    )
     node = np.flatnonzero(keep) + 1
     if area_rtol is not None:
         expected = disu.area[keep]

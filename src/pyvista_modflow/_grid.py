@@ -119,6 +119,7 @@ def build_grid(  # noqa: PLR0913, PLR0915 -- one vectorized pass that frees larg
     corner_xy: FloatArray,
     ring: IntArray,
     nside: IntArray,
+    *,
     top: FloatArray,
     bot: FloatArray,
     layer: IntArray,

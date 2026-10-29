@@ -24,12 +24,14 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: "3.12"
       - run: uv sync --group dev
       - run: uv run --no-sync mypy
       - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+        with:
+          just-version: 1.59.0
       - run: uvx pre-commit run --all-files --show-diff-on-failure
 
   test:
@@ -37,15 +39,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.10", "3.12", "3.14"]
+        lowest: [false]
         include:
-          - os: windows-latest
-            python-version: "3.14"
           - os: macos-14
             python-version: "3.14"
           # The oldest numpy, pyvista and vtk that pyproject.toml allows.
           - os: ubuntu-latest
+            python-version: "3.10"
+            lowest: true
+          - os: windows-latest
             python-version: "3.10"
             lowest: true
     steps:
@@ -53,7 +57,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
         with:
           python-version: ${{ matrix.python-version }}
       - run: uv sync --group dev
@@ -61,7 +65,7 @@ jobs:
         run: uv pip install --resolution lowest-direct .
       - run: uv run --no-sync pytest --cov --cov-report=xml
       - if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: coverage.xml
           fail_ci_if_error: false
